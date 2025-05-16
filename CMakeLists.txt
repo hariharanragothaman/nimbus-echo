@@ -16,6 +16,24 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Catch2)
 
+# ---------------------------------------------------------------
+# Google Benchmark (for round‑trip latency micro‑benchmarks)
+# ---------------------------------------------------------------
+include(FetchContent)
+
+FetchContent_Declare(
+  gbm
+  GIT_REPOSITORY  https://github.com/google/benchmark.git
+  GIT_TAG         v1.8.4           # stable
+)
+# turn off stuff we don’t need to keep CI fast
+set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "" FORCE)
+
+FetchContent_MakeAvailable(gbm)    # creates benchmark::benchmark[[_main]]
+
 add_subdirectory(src)
 enable_testing()
 add_subdirectory(tests)
+
+
