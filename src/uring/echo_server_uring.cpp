@@ -1,6 +1,4 @@
-//
-// Created by Hariharan Ragothaman on 5/15/25.
-//
+
 
 // Extremely small io_uring TCP echo server (edge‑triggered)
 #include <liburing.h>
@@ -10,6 +8,15 @@
 #include <unistd.h>
 #include <cstring>
 #include <iostream>
+
+// ---------------------------------------------------------------------------
+// Compat shim for old liburing (< 2.2) — Ubuntu 24.04 ships 2.0
+// ---------------------------------------------------------------------------
+#ifndef io_uring_cqe_get_res
+/* If the helper isn't defined, just read the struct field directly */
+#define io_uring_cqe_get_res(cqe) ((cqe)->res)
+#endif
+
 
 constexpr uint16_t PORT = 9002;
 constexpr unsigned QUEUE_DEPTH = 256;
