@@ -1,0 +1,52 @@
+name: NimbusNet CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+# ───────────────────────────────────────────────────────────────
+jobs:
+  build-test:
+    strategy:
+      matrix:
+        os: [macos-14, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      # ---- Install toolchain / deps ----------------------------------------
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew update
+          brew install boost cmake ninja
+
+      - name: Install dependencies (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake ninja-build \
+                                  libboost-system-dev liburing-dev
+
+      # ---- Configure & build ----------------------------------------------
+      - name: Configure CMake
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${{ github.workspace }}/bin
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      # ---- Tests -----------------------------------------------------------
+      - name: Run unit / integration tests
+        run: ctest --test-dir build --output-on-failure
+
+  # (Optional) make sure the io_uring Dockerfile still builds on Linux hosts
+  docker-build:
+    needs: build-test
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build io_uring runtime image
+        run: docker build -t nimbus-uring .
