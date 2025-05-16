@@ -2,9 +2,7 @@
 
 **Portable Low‑Latency Echo & Chat Playground**
 
-[![CI](https://github.com/hariharanragothaman/nimbus‑echo/actions/workflows/ci.yml/badge.svg)](https://github.com/hariharanragothaman/nimbus‑echo/actions/workflows/ci.yml)
-
-`nimbus‑net` is a step‑by‑step exploration of high‑performance networking:
+`nimbus‑echo` is a step‑by‑step exploration of high‑performance networking:
 
 | Phase | Transport | Platform | Lines‑of‑code* | Median RTT (64 B) |
 |-------|-----------|----------|----------------|-------------------|
